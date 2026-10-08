@@ -9,7 +9,7 @@ import VoiceHUD from '../components/VoiceHUD'
 import { formatCurrency } from '../components/formatters'
 import { extractApiError } from '../services/api'
 import { useToast } from '../context/ToastContext'
-import type { Customer, Transaction, TransactionType, VoiceState } from '../types'
+import type { Customer, NlpExtractionResult, Transaction, TransactionType, VoiceState } from '../types'
 import {
   Mic,
   MicOff,

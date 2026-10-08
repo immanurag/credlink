@@ -86,7 +86,7 @@ export function useAudioRecorder() {
       }
 
       try {
-        if (mediaRecorder.state !== 'inactive') {
+        if (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused') {
           mediaRecorder.requestData()
         }
       } catch (e) {
