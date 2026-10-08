@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: credlink
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_USER: ${DB_USER:-credlink}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "3307:3306"
+    volumes:
+      - credlink_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/credlink?useSSL=false&allowPublicKeyRetrieval=true
+      DB_USER: ${DB_USER:-credlink}
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      DB_DRIVER: com.mysql.cj.jdbc.Driver
+      JWT_SECRET: ${JWT_SECRET:?set a long random secret in .env}
+      OTP_MODE: ${OTP_MODE:-mock}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      LLM_MODE: ${LLM_MODE:-mock}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_API_URL: ${LLM_API_URL:-https://openrouter.ai/api/v1/chat/completions}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-4o-mini}
+      NOTIFY_MODE: ${NOTIFY_MODE:-mock}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_SMS_FROM: ${TWILIO_SMS_FROM:-}
+      TWILIO_WHATSAPP_FROM: ${TWILIO_WHATSAPP_FROM:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8081}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+
+volumes:
+  credlink_mysql_data:
