@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { extractApiError } from '../services/api'
 import {
   ShieldCheck,
   Mail,
@@ -58,8 +59,8 @@ export default function Login() {
       setTimeout(() => {
         navigate('/auth/verify-otp', { state: { email } })
       }, 600)
-    } catch {
-      setError('Invalid email or credentials. Please try again.')
+    } catch (err: any) {
+      setError(extractApiError(err))
     }
   }
 

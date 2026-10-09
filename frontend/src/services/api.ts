@@ -2,8 +2,11 @@ import axios from 'axios'
 
 // LLM keys, Twilio tokens, JWT secret, and DB credentials all live on the backend only -
 // the frontend only ever holds the short-lived access/refresh tokens issued after OTP login.
+const envBaseUrl = import.meta.env.VITE_API_URL
+const apiBaseUrl = envBaseUrl ? envBaseUrl.replace(/\/+$/, '') : '/api/v1'
+
 export const api = axios.create({
-  baseURL: '/api/v1'
+  baseURL: apiBaseUrl
 })
 
 api.interceptors.request.use((config) => {
@@ -33,7 +36,7 @@ api.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true
         try {
-          const { data } = await axios.post('/api/v1/auth/refresh', { refreshToken })
+          const { data } = await api.post('/auth/refresh', { refreshToken })
           storeSession(data.data)
           isRefreshing = false
           pendingRequests.forEach((cb) => cb())
