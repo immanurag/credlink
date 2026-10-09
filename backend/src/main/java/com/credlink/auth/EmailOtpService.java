@@ -110,7 +110,8 @@ public class EmailOtpService {
             log.info("OTP email successfully sent to {}", email);
         } catch (Exception e) {
             log.error("Failed to send OTP email to {}: ", email, e);
-            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP email. Please try again.", HttpStatus.SERVICE_UNAVAILABLE);
+            String detail = (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getClass().getSimpleName() + ": " + e.getMessage() : e.getClass().getSimpleName();
+            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP email (" + detail + "). Please try again.", HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
