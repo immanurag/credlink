@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { extractApiError } from '../services/api'
 import { ShieldCheck, Mail, Lock, User, Phone, Store, ArrowRight, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function Register() {
@@ -37,8 +38,8 @@ export default function Register() {
     try {
       await requestOtp(email, storeName || name)
       navigate('/auth/verify-otp', { state: { email } })
-    } catch {
-      setError('Unable to register account. Please try again.')
+    } catch (err: any) {
+      setError(extractApiError(err))
     } finally {
       setLoading(false)
     }
