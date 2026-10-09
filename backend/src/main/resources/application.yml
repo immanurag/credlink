@@ -82,7 +82,7 @@ credlink:
       whatsapp-from: ${TWILIO_WHATSAPP_FROM:}
 
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+    allowed-origins: ${CORS_ORIGINS:*}
 
 logging:
   level:
