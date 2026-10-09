@@ -3,7 +3,10 @@ import axios from 'axios'
 // LLM keys, Twilio tokens, JWT secret, and DB credentials all live on the backend only -
 // the frontend only ever holds the short-lived access/refresh tokens issued after OTP login.
 const envBaseUrl = import.meta.env.VITE_API_URL
-const apiBaseUrl = envBaseUrl ? envBaseUrl.replace(/\/+$/, '') : '/api/v1'
+let apiBaseUrl = envBaseUrl ? envBaseUrl.replace(/\/+$/, '') : '/api/v1'
+if (envBaseUrl && !apiBaseUrl.endsWith('/api/v1')) {
+  apiBaseUrl = `${apiBaseUrl}/api/v1`
+}
 
 export const api = axios.create({
   baseURL: apiBaseUrl
