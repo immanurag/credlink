@@ -96,7 +96,7 @@ public class EmailOtpService {
         String from = (mailFrom != null && !mailFrom.isBlank()) ? mailFrom : smtpUsername;
         if (from == null || from.isBlank()) {
             log.error("credlink.otp.mode=live but no SMTP_FROM or SMTP_USERNAME is configured.");
-            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP right now. Please configure SMTP credentials or set OTP_MODE=mock in .env", HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP right now. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);
         }
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -110,8 +110,7 @@ public class EmailOtpService {
             log.info("OTP email successfully sent to {}", email);
         } catch (Exception e) {
             log.error("Failed to send OTP email to {}: ", email, e);
-            String detail = (e.getMessage() != null && !e.getMessage().isBlank()) ? e.getClass().getSimpleName() + ": " + e.getMessage() : e.getClass().getSimpleName();
-            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP email (" + detail + "). Please try again.", HttpStatus.SERVICE_UNAVAILABLE);
+            throw new ApiException("OTP_DELIVERY_FAILED", "Unable to send OTP email right now. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
